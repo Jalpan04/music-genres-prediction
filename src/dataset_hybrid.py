@@ -2,6 +2,7 @@ import os
 import torch
 import numpy as np
 from src.dataset_segmented import SegmentedCNNDataset
+from src.augmentations import SpectrogramAugmentations
 
 class HybridDataset(SegmentedCNNDataset):
     """
@@ -33,6 +34,11 @@ class HybridDataset(SegmentedCNNDataset):
         # 1. Get Spectrogram and Label from parent
         # super().__getitem__ returns (spec, label)
         spec, label = super().__getitem__(idx)
+        
+        # Apply Spectrogram Augmentations (SpecAugment) if augment is True
+        # Note: Audio augmentations are already applied by parent class if augment=True
+        if self.augment:
+            spec = SpectrogramAugmentations.random_apply(spec)
         
         # 2. Get Tabular Features
         # Determine filename from idx (logic borrowed from SegmentedCNNDataset)

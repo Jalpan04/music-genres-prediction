@@ -35,9 +35,13 @@ This research implemented a complete Music Genre Classification system using the
 Our best model combines visual patterns from Mel-Spectrograms (processed by ResNet18) with statistical audio features (processed by MLP). This approach surpasses all individual models.
 
 ![Hybrid Confusion Matrix](results/hybrid_voting_cm.png)
+![Hybrid Confusion Matrix](results/hybrid_voting_cm.png)
 ![Hybrid Training History](results/hybrid_training_history.png)
 
-### 2. Segmentation Strategy
+### 2. Robustness Verification (Phase 6)
+We further validated the model with **Advanced Augmentation** (Noise, SpecAugment). While stricter voting reduced top-line accuracy to 90%, the **Segment Accuracy improved to 88%**, confirming the model's reliability in identifying short audio clips.
+
+### 3. Segmentation Strategy
 Splitting 30s tracks into 10 overlapping 3s segments significantly improved deep learning performance (from 74% to 88.5%) by providing 10x more training data.
 
 ![Segmented Training History](results/segmented_training_history.png)

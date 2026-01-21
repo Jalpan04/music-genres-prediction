@@ -55,11 +55,13 @@ def extract_features(file_path, sr=22050):
         zcr_var = np.var(zcr)
         
         # [NEW] Tempo (Rhythm)
+        # Using librosa.beat.tempo (compatible with most versions)
         # onset_env = librosa.onset.onset_strength(y=y, sr=sr)
         # tempo = librosa.beat.tempo(onset_envelope=onset_env, sr=sr)
-        # tempo is a scalar (usually 1st element of array in newer librosa)
-        # Note: beat_track is deprecated for tempo in new versions, using beat.tempo
-        tempo = librosa.feature.rhythm.tempo(y=y, sr=sr)[0]
+        # In newer librosa, we can pass y directly usually, or use beat.tempo
+        tempo = librosa.beat.tempo(y=y, sr=sr)
+        if np.ndim(tempo) > 0:
+            tempo = tempo[0]
         
         # Adding MFCCs (usually 20)
         mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=20)
@@ -85,23 +87,32 @@ def extract_features(file_path, sr=22050):
         print(f"Error processing {file_path}: {e}")
         return None
 
+from joblib import Parallel, delayed
+
 def process_dataset(audio_paths, labels, output_csv='data/features.csv'):
     """
     Iterates over audio files, extracts features, and saves to CSV.
+    Uses parallel processing for speed.
     """
-    print("Starting feature extraction...")
-    data = []
-    total = len(audio_paths)
+    print("Starting feature extraction (Parallel)...")
     
-    for i, (path, label) in enumerate(zip(audio_paths, labels)):
-        if i % 100 == 0:
-            print(f"Processing {i}/{total}")
-        
-        feats = extract_features(path)
-        if feats:
-            feats['label'] = label
-            feats['filename'] = os.path.basename(path)
-            data.append(feats)
+    def process_one(path, label):
+        try:
+            feats = extract_features(path)
+            if feats:
+                feats['label'] = label
+                feats['filename'] = os.path.basename(path)
+            return feats
+        except:
+            return None
+
+    # Use all CPUs except 1
+    data = Parallel(n_jobs=-1, backend='loky', verbose=5)(
+        delayed(process_one)(path, label) for path, label in zip(audio_paths, labels)
+    )
+    
+    # Filter Nones
+    data = [d for d in data if d is not None]
             
     df = pd.DataFrame(data)
     

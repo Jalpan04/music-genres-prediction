@@ -18,7 +18,7 @@ class SegmentedCNNDataset(Dataset):
         self.class_to_idx = class_to_idx
         self.sr = sr
         self.augment = augment
-        self.augmenter = AudioAugmentations(sr)
+        # self.augmenter = AudioAugmentations(sr) # Removed: Startic usage
         
         self.segments_per_track = int(duration // segment_duration)
         self.segment_samples = int(sr * segment_duration)
@@ -57,7 +57,7 @@ class SegmentedCNNDataset(Dataset):
                 
             # Augment (only if train)
             if self.augment:
-                y = self.augmenter.apply_random(y)
+                y = AudioAugmentations.random_apply(y, self.sr)
             
             # Tensor convert
             y_tensor = torch.tensor(y, dtype=torch.float32)
