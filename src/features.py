@@ -36,13 +36,31 @@ def extract_features(file_path, sr=22050):
         bw_mean = np.mean(bw)
         bw_var = np.var(bw)
         
+        # [NEW] Spectral Rolloff (from reference paper)
+        rolloff = librosa.feature.spectral_rolloff(y=y, sr=sr)
+        rolloff_mean = np.mean(rolloff)
+        rolloff_var = np.var(rolloff)
+        
+        # [NEW] Spectral Contrast (Texture)
+        contrast = librosa.feature.spectral_contrast(y=y, sr=sr)
+        # Contrast returns 7 bands. We'll take mean/var of the mean across bands for simplicity, 
+        # or flatten. Let's take mean/var of each band? Too many features. 
+        # Let's take the mean over time, then mean over bands (overall contrast)
+        contrast_mean = np.mean(contrast)
+        contrast_var = np.var(contrast)
+        
         # Zero Crossing Rate
         zcr = librosa.feature.zero_crossing_rate(y)
         zcr_mean = np.mean(zcr)
         zcr_var = np.var(zcr)
         
-        # Harmony and Perceptr - skipping for speed/simplicity unless requested, 
-        # but prompt asked for "meaningful audio features including..." list which I have covered.
+        # [NEW] Tempo (Rhythm)
+        # onset_env = librosa.onset.onset_strength(y=y, sr=sr)
+        # tempo = librosa.beat.tempo(onset_envelope=onset_env, sr=sr)
+        # tempo is a scalar (usually 1st element of array in newer librosa)
+        # Note: beat_track is deprecated for tempo in new versions, using beat.tempo
+        tempo = librosa.feature.rhythm.tempo(y=y, sr=sr)[0]
+        
         # Adding MFCCs (usually 20)
         mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=20)
         
@@ -51,7 +69,10 @@ def extract_features(file_path, sr=22050):
             'rms_mean': rms_mean, 'rms_var': rms_var,
             'spectral_centroid_mean': cent_mean, 'spectral_centroid_var': cent_var,
             'spectral_bandwidth_mean': bw_mean, 'spectral_bandwidth_var': bw_var,
+            'spectral_rolloff_mean': rolloff_mean, 'spectral_rolloff_var': rolloff_var,
+            'spectral_contrast_mean': contrast_mean, 'spectral_contrast_var': contrast_var,
             'zero_crossing_rate_mean': zcr_mean, 'zero_crossing_rate_var': zcr_var,
+            'tempo': tempo
         }
         
         for i in range(1, 21):

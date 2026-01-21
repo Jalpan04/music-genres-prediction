@@ -17,3 +17,6 @@ results/*.pth
 # Logs and temp
 *.log
 .ipynb_checkpoints/
+
+# External Documents
+*.pdf
