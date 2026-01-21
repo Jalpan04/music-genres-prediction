@@ -1,0 +1,19 @@
+__pycache__/
+*.pyc
+.DS_Store
+.vscode/
+venv/
+env/
+
+# Data
+data/
+*.zip
+*.tar.gz
+
+# Model Weights (too large for standard git)
+*.pth
+results/*.pth
+
+# Logs and temp
+*.log
+.ipynb_checkpoints/
