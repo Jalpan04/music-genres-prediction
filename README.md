@@ -61,3 +61,7 @@ t-SNE visualization shows how genres cluster in the feature space.
 ### Training Curves
 ![ResNet Training](results/resnet_training_history.png)
 ![MLP Training](results/mlp_training_history.png)
+
+## License
+
+This project is licensed under the Apache-2.0 License - see the [LICENSE](LICENSE) file for details.
