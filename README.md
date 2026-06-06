@@ -1,5 +1,7 @@
 # Music Genre Classification Research
 
+![GitHub top language](https://img.shields.io/github/languages/top/Jalpan04/music-genres-prediction) ![GitHub repo size](https://img.shields.io/github/repo-size/Jalpan04/music-genres-prediction) [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+
 ## Overview
 This research implemented a complete Music Genre Classification system using the GTZAN dataset. The pipeline includes automated data downloading, feature extraction (MFCC, Chroma, etc.), and the training of both classical and deep learning models.
 
